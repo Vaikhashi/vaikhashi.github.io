@@ -96,6 +96,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
@@ -256,34 +257,55 @@ section.block { padding: clamp(3rem, 8vw, 5.5rem) 0 0; }
 #stack { --c: var(--amber); }
 #contact { --c: var(--rose); }
 
-/* work: run trace */
-.trace { list-style: none; margin: 0; padding: 0; position: relative; }
-.trace::before { content: ""; position: absolute; left: 7.25rem; top: .5rem; bottom: .5rem; width: 1.5px; background: var(--line); }
-.run { display: grid; grid-template-columns: 6.25rem 1fr; column-gap: 2rem; position: relative; padding-bottom: 1.75rem; }
-.run:last-child { padding-bottom: 0; }
-.run::before {
-  content: ""; position: absolute; left: calc(7.25rem - 5px); top: .45rem;
-  width: 11.5px; height: 11.5px; border-radius: 50%; background: var(--canvas); border: 2px solid var(--line-strong);
+/* work: git log --graph */
+.gitlog {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+  padding: 1rem clamp(1rem, 3vw, 1.5rem) 1.25rem; position: relative;
 }
-.run.now::before { background: var(--violet); border-color: var(--violet); }
-.when { font-family: var(--mono); font-size: .75rem; color: var(--muted); padding-top: .2rem; font-variation-settings: "wdth" 87.5; line-height: 1.5; }
-.what h3 { margin: 0; font-size: var(--s1); font-weight: 600; line-height: 1.3; }
-.what .role { margin: .1rem 0 .6rem; color: var(--muted); }
-.what p { margin: 0 0 .6rem; max-width: 42rem; }
-.what ul { margin: 0; padding-left: 1.1rem; max-width: 42rem; }
-.what li { margin-bottom: .45rem; }
-.what li::marker { color: var(--violet); }
-.run.now .what {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.4rem; box-shadow: var(--shadow);
-  margin-left: 1.25rem;
+.gitlog-cmd {
+  font-family: var(--mono); font-size: .8125rem; font-variation-settings: "wdth" 87.5; color: var(--muted);
+  padding-bottom: .9rem; margin-bottom: .5rem; border-bottom: 1px dashed var(--line); overflow-x: auto; white-space: nowrap;
 }
-.note {
-  margin-top: 1.1rem; max-width: 42rem;
-  border-left: 3px solid var(--violet); padding: .55rem 0 .55rem .9rem; font-size: .9375rem;
-  background: color-mix(in srgb, var(--violet) 7%, transparent); border-radius: 0 8px 8px 0;
+.gitlog-cmd b { color: var(--violet); font-weight: 600; }
+.commits-wrap { position: relative; }
+.git-graph { position: absolute; left: 0; top: 0; width: 2.75rem; height: 100%; overflow: visible; pointer-events: none; }
+.git-graph .ln { fill: none; stroke-width: 2; stroke-linecap: round; }
+.git-graph .l0 { stroke: var(--violet); }
+.git-graph .l1 { stroke: var(--teal); }
+.git-graph circle { stroke-width: 2; }
+.commits { list-style: none; margin: 0; padding: 0; }
+.commit { padding: .85rem 0 .85rem 2.75rem; }
+.commit + .commit { border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.commit[data-lane="1"] { padding-left: 3.6rem; }
+.c-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .65rem; row-gap: .2rem; }
+.c-hash { font-family: var(--mono); font-size: .75rem; color: var(--amber); font-variation-settings: "wdth" 87.5; }
+.ref {
+  font-family: var(--mono); font-size: .6875rem; font-variation-settings: "wdth" 87.5; line-height: 1.6;
+  padding: 0 .45rem; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap;
 }
-.note b { font-weight: 600; }
-.run:not(.now) .what { margin-left: 1.25rem; }
+.ref.head { color: var(--violet); }
+.ref.tag { color: var(--rose); }
+.ref.branch { color: var(--teal); }
+.c-msg { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.35; flex: 1 1 18rem; }
+.c-date { font-family: var(--mono); font-size: .75rem; color: var(--muted); margin-left: auto; white-space: nowrap; font-variation-settings: "wdth" 87.5; }
+.c-body { margin: .3rem 0 0; color: var(--muted); max-width: 44rem; font-size: .9375rem; }
+.c-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.chip-btn {
+  font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; color: var(--ink);
+  display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 7px;
+  background: transparent; border: 1px solid var(--line);
+}
+.chip-btn:hover { border-color: var(--line-strong); }
+.chip-btn.play { background: var(--violet); border-color: var(--violet); color: var(--surface); }
+.chip-btn.play:hover { filter: brightness(1.1); }
+.chip-btn svg { width: .8rem; height: .8rem; }
+.diff {
+  margin: .6rem 0 0; padding: .65rem .9rem; border-radius: 8px; background: var(--code-bg); color: var(--code-ink);
+  font-family: var(--mono); font-size: .75rem; line-height: 1.7; font-variation-settings: "wdth" 87.5; overflow-x: auto; max-width: 44rem;
+}
+.diff .h { color: var(--code-punc); }
+.diff .a { color: #7EE0A6; }
+.diff .r { color: #FF9DB8; }
 
 /* projects */
 .featured { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem; }
@@ -305,18 +327,222 @@ section.block { padding: clamp(3rem, 8vw, 5.5rem) 0 0; }
 }
 .repo-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+.feature-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; margin-top: 1.1rem; }
+.feature-actions .repo-link { margin-top: 0; }
+.run-btn {
+  font: inherit; font-weight: 600; font-size: .9375rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .5rem; height: 2.5rem; padding: 0 1rem; border-radius: 9px;
+  background: var(--teal); color: var(--surface); border: 0;
+}
+.run-btn:hover { filter: brightness(1.08); }
+.run-btn svg { width: .85rem; height: .85rem; }
+
 .repos { border-top: 1px solid var(--line); }
 .repo {
-  display: grid; grid-template-columns: 13rem 1fr auto; gap: 1.25rem; align-items: baseline;
-  padding: .95rem .25rem; border-bottom: 1px solid var(--line); text-decoration: none;
+  display: grid; grid-template-columns: 13rem 1fr auto; gap: 1.25rem; align-items: center;
+  padding: .85rem .25rem; border-bottom: 1px solid var(--line);
 }
-.repo:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); }
-.repo:hover .repo-name { color: var(--teal); }
 .repo-name { font-weight: 600; display: flex; align-items: center; gap: .55rem; }
+.repo-acts { display: flex; gap: .4rem; align-items: center; }
+.repo-acts a { font-size: .8125rem; color: var(--muted); padding: .3rem .4rem; text-underline-offset: 3px; }
+.repo-acts a:hover { color: var(--ink); }
+.repo-acts .chip-btn { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, transparent); }
+.repo-acts .chip-btn:hover { border-color: var(--teal); }
 .lang { width: .65rem; height: .65rem; border-radius: 50%; background: var(--lc); flex: none; transform: translateY(.02em); }
 .repo-desc { color: var(--muted); font-size: .9375rem; }
 .repo-desc em { font-style: normal; color: var(--ink); }
 .repo-year { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+
+/* ---------- demo player ---------- */
+dialog.demo {
+  width: min(62rem, calc(100vw - 1.25rem)); max-height: calc(100dvh - 1.25rem); padding: 0;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink);
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .5); overflow: hidden;
+}
+dialog.demo[open] { display: flex; flex-direction: column; }
+dialog.demo::backdrop { background: rgba(13, 17, 48, .55); backdrop-filter: blur(3px); }
+.demo-bar { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem .65rem 1rem; border-bottom: 1px solid var(--line); }
+.demo-bar h2 { margin: 0; font-family: var(--mono); font-size: .875rem; font-weight: 600; font-variation-settings: "wdth" 100; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.demo-kind { white-space: nowrap; flex: none; font-size: .75rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .05rem .55rem; }
+.demo-close { margin-left: auto; width: 2.25rem; height: 2.25rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+.demo-close:hover { border-color: var(--line-strong); }
+.demo-stage {
+  position: relative; flex: 1 1 auto; min-height: 0; overflow: auto; height: min(36rem, calc(100dvh - 9rem));
+  background-color: var(--canvas);
+  background-image: radial-gradient(circle at center, var(--grid) 0 1px, transparent 1.3px);
+  background-size: 22px 22px;
+  padding: clamp(.75rem, 2.5vw, 1.5rem);
+}
+.demo-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; padding: .7rem 1rem; border-top: 1px solid var(--line); }
+.demo-foot p { margin: 0; font-size: .8125rem; color: var(--muted); flex: 1 1 18rem; }
+.demo-foot .acts { display: flex; gap: .5rem; }
+.demo-foot a.chip-btn { text-decoration: none; }
+
+/* shared demo bits */
+.d-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+.d-term {
+  background: var(--code-bg); color: var(--code-ink); border-radius: 12px; border: 1px solid var(--line);
+  font-family: var(--mono); font-size: .75rem; line-height: 1.65; font-variation-settings: "wdth" 87.5;
+  padding: .9rem 1rem; overflow: auto; white-space: pre-wrap; word-break: break-word;
+}
+.d-term .dim { color: var(--code-punc); }
+.d-term .ok { color: #7EE0A6; }
+.d-term .bad { color: #FF9DB8; }
+.d-term .key { color: var(--code-key); }
+.d-term .str { color: var(--code-str); }
+.d-term .cur { display: inline-block; width: .55em; height: 1.1em; background: var(--code-ink); vertical-align: -.2em; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.d-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; height: 100%; min-height: 26rem; }
+.d-split > * { min-height: 0; }
+.pulse-click { animation: pclick .35s ease; }
+@keyframes pclick { 50% { transform: scale(.94); box-shadow: 0 0 0 4px color-mix(in srgb, var(--teal) 35%, transparent); } }
+
+/* agent run */
+.ag-flow { display: flex; flex-direction: column; gap: .5rem; padding: .25rem; }
+.ag-node {
+  display: grid; grid-template-columns: 1.5rem 1fr auto; align-items: center; gap: .6rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: .5rem .75rem; position: relative;
+  transition: border-color .2s, background .2s;
+}
+.ag-node + .ag-node::before { content: ""; position: absolute; left: 1.5rem; top: -.55rem; height: .55rem; width: 2px; background: var(--line-strong); }
+.ag-node .t { font-family: var(--mono); font-size: .625rem; color: var(--muted); display: block; font-variation-settings: "wdth" 87.5; }
+.ag-node b { font-weight: 600; font-size: .875rem; }
+.ag-ico { width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 2px solid var(--line-strong); display: grid; place-items: center; }
+.ag-node.run { border-color: var(--violet); }
+.ag-node.run .ag-ico { border-color: var(--violet); border-top-color: transparent; animation: spin .7s linear infinite; }
+.ag-node.done .ag-ico { border-color: var(--teal); background: var(--teal); }
+.ag-node.done .ag-ico::after { content: ""; width: .35rem; height: .6rem; border: solid var(--surface); border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px, -1px); }
+.ag-node .ms { font-family: var(--mono); font-size: .6875rem; color: var(--muted); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* campusflow */
+.cf-app { display: flex; flex-direction: column; overflow: hidden; }
+.cf-top { display: flex; align-items: center; gap: .4rem; padding: .7rem .8rem; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.cf-top strong { font-size: .9375rem; margin-right: auto; }
+.cf-role { font-family: var(--mono); font-size: .625rem; padding: .15rem .45rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-variation-settings: "wdth" 87.5; transition: all .2s; }
+.cf-role.on { background: var(--teal); border-color: var(--teal); color: var(--surface); }
+.cf-body { padding: .8rem; display: flex; flex-direction: column; gap: .6rem; overflow: auto; flex: 1; position: relative; }
+.cf-empty { color: var(--muted); font-size: .875rem; text-align: center; padding: 2rem 1rem; }
+.cf-event { border: 1px solid var(--line); border-radius: 10px; padding: .65rem .75rem; animation: popin .35s ease; }
+.cf-event header { display: flex; justify-content: space-between; gap: .5rem; align-items: center; }
+.cf-event b { font-size: .9375rem; }
+.cf-status { font-family: var(--mono); font-size: .625rem; padding: .1rem .4rem; border-radius: 4px; background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); font-variation-settings: "wdth" 87.5; }
+.cf-status.done { background: color-mix(in srgb, var(--teal) 18%, transparent); color: var(--teal); }
+.cf-meta { font-size: .8125rem; color: var(--muted); }
+.cf-task { display: flex; align-items: center; gap: .5rem; font-size: .875rem; margin-top: .5rem; padding-top: .5rem; border-top: 1px dashed var(--line); animation: popin .35s ease; }
+.cf-box { width: 1rem; height: 1rem; border: 1.5px solid var(--line-strong); border-radius: 4px; flex: none; display: grid; place-items: center; }
+.cf-task.done .cf-box { background: var(--teal); border-color: var(--teal); }
+.cf-task.done .cf-box::after { content: ""; width: .25rem; height: .5rem; border: solid var(--surface); border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px, -1px); }
+.cf-task.done span { text-decoration: line-through; color: var(--muted); }
+.cf-task.hl { background: color-mix(in srgb, var(--amber) 14%, transparent); border-radius: 6px; }
+.cf-task small { margin-left: auto; font-size: .75rem; color: var(--muted); }
+.cf-toast { position: absolute; left: .8rem; right: .8rem; bottom: .8rem; padding: .55rem .75rem; border-radius: 8px; font-size: .8125rem; background: var(--rose); color: #fff; animation: popin .3s ease; }
+@keyframes popin { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+
+/* face */
+.fr-wrap { display: flex; flex-direction: column; gap: .75rem; height: 100%; }
+.fr-steps { display: flex; flex-wrap: wrap; gap: .4rem; }
+.fr-step { font-family: var(--mono); font-size: .6875rem; padding: .25rem .55rem; border-radius: 6px; border: 1px solid var(--line); color: var(--muted); background: var(--surface); font-variation-settings: "wdth" 87.5; transition: all .25s; }
+.fr-step.on { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 15%, transparent); }
+.fr-step.done { color: var(--ink); }
+.fr-svg { width: 100%; flex: 1; min-height: 0; max-height: 30rem; color: var(--ink); }
+.fr-svg text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.fr-svg .lbl-strong { fill: var(--ink); font-weight: 600; }
+.fr-note { font-size: .875rem; color: var(--muted); margin: 0; min-height: 1.4em; }
+
+/* labour connect */
+.lc-wrap { display: grid; place-items: center; height: 100%; }
+.lc-who { font-family: var(--mono); font-size: .75rem; color: var(--muted); text-align: center; margin-bottom: .5rem; font-variation-settings: "wdth" 87.5; }
+.lc-phone {
+  width: 17.5rem; height: 30rem; border-radius: 2rem; border: 8px solid var(--router-bg); background: var(--surface);
+  position: relative; overflow: hidden; box-shadow: var(--shadow);
+}
+.lc-screen { position: absolute; inset: 0; padding: 1.4rem .9rem .9rem; display: flex; flex-direction: column; gap: .55rem; transition: transform .45s ease, opacity .45s ease; font-size: .875rem; overflow: hidden; }
+.lc-screen.off { transform: translateX(100%); opacity: 0; }
+.lc-screen.gone { transform: translateX(-30%); opacity: 0; }
+.lc-screen h4 { margin: 0 0 .2rem; font-size: 1.0625rem; }
+.lc-field { border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem; min-height: 2.2rem; }
+.lc-field small { display: block; font-size: .6875rem; color: var(--muted); }
+.lc-btn { border-radius: 8px; padding: .55rem; text-align: center; font-weight: 600; background: var(--teal); color: var(--surface); margin-top: .3rem; }
+.lc-btn.ghost { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+.lc-card { border: 1px solid var(--line); border-radius: 10px; padding: .55rem .65rem; display: grid; gap: .1rem; }
+.lc-card b { font-size: .875rem; }
+.lc-card span { font-size: .75rem; color: var(--muted); }
+.lc-card.new { border-color: var(--teal); animation: popin .4s ease; }
+.lc-success { margin: auto 0; text-align: center; display: grid; gap: .5rem; justify-items: center; }
+.lc-success i { width: 3rem; height: 3rem; border-radius: 50%; background: var(--teal); display: grid; place-items: center; }
+.lc-success i::after { content: ""; width: .7rem; height: 1.2rem; border: solid var(--surface); border-width: 0 3px 3px 0; transform: rotate(45deg) translate(-2px, -2px); }
+.lc-bubble { max-width: 80%; padding: .45rem .65rem; border-radius: 12px; font-size: .8125rem; animation: popin .3s ease; }
+.lc-bubble.me { align-self: flex-end; background: var(--teal); color: var(--surface); border-bottom-right-radius: 4px; }
+.lc-bubble.them { align-self: flex-start; background: color-mix(in srgb, var(--line) 60%, transparent); border-bottom-left-radius: 4px; }
+
+/* pizza */
+.pz { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; }
+.pz-menu { display: grid; gap: .6rem; align-content: start; }
+.pz-item { display: grid; grid-template-columns: 3.25rem 1fr auto; align-items: center; gap: .75rem; padding: .6rem .75rem; }
+.pz-item b { display: block; }
+.pz-item span { font-size: .8125rem; color: var(--muted); }
+.pz-add { font: inherit; font-weight: 600; font-size: .8125rem; border-radius: 8px; border: 1px solid var(--teal); background: transparent; color: var(--teal); padding: .35rem .7rem; cursor: pointer; }
+.pz-add:hover { background: color-mix(in srgb, var(--teal) 12%, transparent); }
+.pz-side { display: grid; gap: .75rem; align-content: start; }
+.pz-cart { padding: .75rem .9rem; }
+.pz-cart h4, .pz-track h4 { margin: 0 0 .4rem; font-size: .9375rem; }
+.pz-line { display: flex; justify-content: space-between; font-size: .875rem; padding: .15rem 0; animation: popin .25s ease; }
+.pz-total { display: flex; justify-content: space-between; font-weight: 600; border-top: 1px solid var(--line); margin-top: .4rem; padding-top: .4rem; }
+.pz-order { width: 100%; margin-top: .6rem; font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: .55rem; background: var(--teal); color: var(--surface); cursor: pointer; }
+.pz-order:disabled { opacity: .45; cursor: not-allowed; }
+.pz-track { padding: .75rem .9rem; }
+.pz-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+.pz-steps li { display: flex; align-items: center; gap: .55rem; font-size: .875rem; color: var(--muted); }
+.pz-steps li i { width: .8rem; height: .8rem; border-radius: 50%; border: 2px solid var(--line-strong); flex: none; transition: all .25s; }
+.pz-steps li.on { color: var(--ink); font-weight: 600; }
+.pz-steps li.on i { background: var(--teal); border-color: var(--teal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 25%, transparent); }
+.pz-steps li.past i { background: var(--teal); border-color: var(--teal); }
+.pz-hint { font-size: .8125rem; color: var(--muted); margin: 0; }
+
+/* notebook */
+.nb { display: grid; gap: .9rem; max-width: 46rem; margin: 0 auto; }
+.nb-cell { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); gap: .5rem; animation: popin .3s ease; }
+.nb-in { font-family: var(--mono); font-size: .6875rem; color: var(--violet); padding-top: .55rem; text-align: right; font-variation-settings: "wdth" 87.5; }
+.nb-code { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: .5rem .7rem; font-family: var(--mono); font-size: .75rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word; font-variation-settings: "wdth" 87.5; }
+.nb-code .kw { color: var(--violet); }
+.nb-code .st { color: var(--teal); }
+.nb-code .cm { color: var(--muted); }
+.nb-out { grid-column: 2; font-family: var(--mono); font-size: .75rem; white-space: pre-wrap; padding: .2rem .7rem; font-variation-settings: "wdth" 87.5; }
+.nb-out svg { width: 100%; height: auto; display: block; font-family: var(--sans); }
+.nb-out svg text { font-size: 10px; fill: var(--muted); }
+.nb-cell.running .nb-code { border-color: var(--violet); }
+
+/* pong */
+.pg-wrap { display: grid; gap: .6rem; justify-items: center; }
+.pg-canvas { width: 100%; max-width: 44rem; aspect-ratio: 16 / 10; border-radius: 12px; background: var(--code-bg); touch-action: none; cursor: none; display: block; }
+.pg-help { font-size: .8125rem; color: var(--muted); margin: 0; text-align: center; }
+
+/* task manager */
+.tm { max-width: 26rem; margin: 0 auto; padding: 1rem; }
+.tm h4 { margin: 0 0 .7rem; font-size: 1.125rem; }
+.tm form { display: flex; gap: .5rem; }
+.tm input[type=text] { flex: 1; font: inherit; font-size: .9375rem; padding: .5rem .65rem; border-radius: 8px; border: 1px solid var(--line); background: var(--canvas); color: var(--ink); min-width: 0; }
+.tm button { font: inherit; cursor: pointer; }
+.tm .add { font-weight: 600; border: 0; background: var(--teal); color: var(--surface); border-radius: 8px; padding: 0 .9rem; }
+.tm-filters { display: flex; gap: .3rem; margin: .8rem 0 .4rem; }
+.tm-filters button { font-size: .8125rem; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: .2rem .65rem; }
+.tm-filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.tm ul { list-style: none; margin: 0; padding: 0; }
+.tm li { display: flex; align-items: center; gap: .6rem; padding: .55rem 0; border-bottom: 1px solid var(--line); animation: popin .25s ease; }
+.tm li label { display: flex; align-items: center; gap: .6rem; flex: 1; cursor: pointer; font-size: .9375rem; }
+.tm li input { width: 1.05rem; height: 1.05rem; accent-color: var(--teal); }
+.tm li.done label span { text-decoration: line-through; color: var(--muted); }
+.tm .del { border: 0; background: transparent; color: var(--muted); font-size: 1.1rem; line-height: 1; padding: .2rem .4rem; border-radius: 6px; }
+.tm .del:hover { color: var(--rose); }
+.tm-count { font-size: .8125rem; color: var(--muted); margin: .6rem 0 0; }
+
+@media (max-width: 760px) {
+  .d-split { grid-template-columns: 1fr; height: auto; }
+  .d-split .d-term { max-height: 14rem; }
+  .pz { grid-template-columns: 1fr; }
+  .demo-stage { height: calc(100dvh - 8.5rem); }
+}
 
 /* lab */
 .lab-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
@@ -427,11 +653,9 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
   .pal-label { display: none; }
   .repo { grid-template-columns: 1fr auto; row-gap: .2rem; }
   .repo-desc { grid-column: 1 / -1; grid-row: 2; }
-  .trace::before { left: .3rem; }
-  .run { grid-template-columns: 1fr; padding-left: 1.6rem; }
-  .run::before { left: -.05rem; }
-  .run.now .what, .run:not(.now) .what { margin-left: 0; }
-  .when { padding: 0 0 .35rem; }
+  .c-msg { flex-basis: 100%; order: 3; }
+  .cmd-extra { display: none; }
+  .c-date { order: 2; }
 }
 @media (max-width: 900px) {
   .js .graph.ready .branch:hover { transform: none; }
@@ -536,47 +760,76 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
     <div class="wrap">
       <div class="block-head">
         <h2 id="work-h"><i></i>Work</h2>
-        <p>Newest first.</p>
+        <p>My career, as a commit graph. Newest at the top.</p>
       </div>
-      <ol class="trace">
-        <li class="run now">
-          <div class="when">Jun 2026<br>to now</div>
-          <div class="what">
-            <h3>GapBlue Software Labs</h3>
-            <p class="role">Trainee Associate Consultant, ERP</p>
-            <p>I build agentic applications on Oracle Fusion Cloud with Oracle AI Agent Studio, and take them from proof of concept to something a finance or procurement team can actually click through.</p>
-            <ul>
-              <li>Multi-branch agent workflows that create, query and navigate Fusion records through REST APIs and business objects.</li>
-              <li>A supplier onboarding validator: document OCR, bank-detail checks, a weighted risk score computed in code nodes, and approve or reject wired straight into Oracle BPM tasks, with an approver dashboard on top.</li>
-              <li>A bank reconciliation loader: Excel uploads validated and loaded through PL/SQL, with a balance check and a reconciliation report.</li>
-              <li>BI Publisher reports with parameterised SQL, such as purchase requisitions traced through to PO conversion.</li>
-              <li>Functional grounding in Procurement and Sourcing: negotiations, supplier responses, awards and purchase orders.</li>
-            </ul>
-            <p class="note"><b>Favourite bug so far:</b> a query node that returned zero rows with no error and no warning. The fix was one missing limit parameter. I check payload shapes first now.</p>
-          </div>
-        </li>
-        <li class="run">
-          <div class="when">Oct 2025</div>
-          <div class="what">
-            <h3>Data analytics programme, AICTE and VOIS</h3>
-            <p>Exploratory analysis of the Netflix catalogue and Airbnb listings in Pandas and Seaborn.</p>
-          </div>
-        </li>
-        <li class="run">
-          <div class="when">Jul 2025</div>
-          <div class="what">
-            <h3>AI developer assessment, Jezt Technologies</h3>
-            <p>Face recognition on low-quality images, from baseline embeddings to a fine-tuned model. Details under projects.</p>
-          </div>
-        </li>
-        <li class="run">
-          <div class="when">2026</div>
-          <div class="what">
-            <h3>B.Tech in Computer Science and Engineering</h3>
-            <p>Honours in Artificial Intelligence and Machine Learning.</p>
-          </div>
-        </li>
-      </ol>
+      <div class="gitlog">
+        <div class="gitlog-cmd"><b>$</b> git log --graph <span class="cmd-extra">--decorate --oneline </span>career</div>
+        <div class="commits-wrap">
+          <svg class="git-graph" id="gitGraph" aria-hidden="true"></svg>
+          <ol class="commits" id="commits">
+            <li class="commit" data-lane="0" data-dot="head">
+              <div class="c-head">
+                <code class="c-hash">a3f9c21</code>
+                <span class="ref head">HEAD -&gt; main</span>
+                <h3 class="c-msg">Join GapBlue Software Labs as Trainee Associate Consultant, ERP</h3>
+                <time class="c-date">Jun 2026</time>
+              </div>
+              <p class="c-body">Building AI agents on Oracle Fusion Cloud with Oracle AI Agent Studio for finance and procurement teams, plus PL/SQL and BI Publisher reports.</p>
+              <div class="c-actions">
+                <button class="chip-btn play" type="button" data-demo="agent"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>Watch an agent run</button>
+                <button class="chip-btn" type="button" data-diff aria-expanded="false">Show diff</button>
+              </div>
+<pre class="diff" hidden><span class="h">@@ skills @@</span>
+<span class="a">+ Oracle Fusion Cloud, Oracle AI Agent Studio</span>
+<span class="a">+ Fusion REST APIs, Oracle BPM, PL/SQL, BI Publisher</span>
+<span class="r">- final-year student</span></pre>
+            </li>
+            <li class="commit" data-lane="0" data-dot="merge">
+              <div class="c-head">
+                <code class="c-hash">5e0b7d4</code>
+                <span class="ref tag">tag: graduated</span>
+                <h3 class="c-msg">Merge branch 'btech-cse': B.Tech CSE, Honours in AI and ML</h3>
+                <time class="c-date">2026</time>
+              </div>
+              <div class="c-actions">
+                <button class="chip-btn" type="button" data-diff aria-expanded="false">Show diff</button>
+              </div>
+<pre class="diff" hidden><span class="h">@@ education @@</span>
+<span class="a">+ B.Tech, Computer Science and Engineering</span>
+<span class="a">+ Honours in Artificial Intelligence and Machine Learning</span>
+<span class="a">+ Shortlisted: IET India Scholarship Award, regional round</span></pre>
+            </li>
+            <li class="commit" data-lane="1">
+              <div class="c-head">
+                <code class="c-hash">c81d2e9</code>
+                <span class="ref branch">btech-cse</span>
+                <h3 class="c-msg">Complete AICTE and VOIS data analytics programme</h3>
+                <time class="c-date">Oct 2025</time>
+              </div>
+              <div class="c-actions">
+                <button class="chip-btn play" type="button" data-demo="eda"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>Run the notebook</button>
+              </div>
+            </li>
+            <li class="commit" data-lane="1">
+              <div class="c-head">
+                <code class="c-hash">47a6f0b</code>
+                <h3 class="c-msg">Ship face recognition for Jezt Technologies' AI assessment</h3>
+                <time class="c-date">Jul 2025</time>
+              </div>
+              <div class="c-actions">
+                <button class="chip-btn play" type="button" data-demo="face"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>Watch the pipeline</button>
+              </div>
+            </li>
+            <li class="commit" data-lane="0" data-dot="root">
+              <div class="c-head">
+                <code class="c-hash">0f13ab8</code>
+                <h3 class="c-msg">Initial commit: start B.Tech in Computer Science</h3>
+                <time class="c-date">2022</time>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -585,22 +838,24 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
     <div class="wrap">
       <div class="block-head">
         <h2 id="projects-h"><i></i>Projects</h2>
-        <p>Everything here is public on GitHub.</p>
+        <p>Every project has a demo. Press play.</p>
       </div>
 
       <div class="featured">
         <article class="node feature">
           <div class="node-type"><i></i>full-stack, 2026</div>
           <h3>CampusFlow</h3>
-          <p>Event and task coordination for college clubs. Club admins plan events and hand out tasks, members track their deadlines, and the principal sees every club at once.</p>
+          <p>Event and task coordination for college clubs, with separate views for club admins, members and the principal.</p>
           <ul>
-            <li>FastAPI backend with SQLAlchemy models for users, clubs, events and tasks.</li>
-            <li>JWT auth with three roles enforced at the API layer.</li>
-            <li>Deadline and upcoming-meeting notifications run as background tasks.</li>
+            <li>FastAPI and SQLAlchemy backend with JWT auth and three roles.</li>
+            <li>Deadline notifications run as background tasks.</li>
             <li>React and Vite front end with protected routes.</li>
           </ul>
-          <ul class="tags"><li>Python</li><li>FastAPI</li><li>SQLAlchemy</li><li>JWT</li><li>React</li><li>Vite</li></ul>
-          <a class="repo-link" href="https://github.com/Vaikhashi/Campusflow">View repository</a>
+          <ul class="tags"><li>Python</li><li>FastAPI</li><li>SQLAlchemy</li><li>JWT</li><li>React</li></ul>
+          <div class="feature-actions">
+            <button class="run-btn" type="button" data-demo="campusflow"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>Run demo</button>
+            <a class="repo-link" href="https://github.com/Vaikhashi/Campusflow">View code</a>
+          </div>
         </article>
 
         <article class="node feature">
@@ -609,46 +864,48 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
           <p>Matching faces when the photos are blurry, dark or tiny. Built for Jezt Technologies' AI developer assessment.</p>
           <ul>
             <li>Baseline embeddings from a pretrained InsightFace model.</li>
-            <li>A ResNet18 classifier fine-tuned in PyTorch on the low-quality set.</li>
-            <li>Before-and-after evaluation with ROC, precision-recall and similarity distributions.</li>
-            <li>Written report with the results and plots, in the repo.</li>
+            <li>A ResNet18 fine-tuned in PyTorch on low-quality faces.</li>
+            <li>Evaluated with ROC, precision-recall and similarity plots.</li>
           </ul>
-          <ul class="tags"><li>PyTorch</li><li>InsightFace</li><li>ResNet18</li><li>OpenCV</li><li>scikit-learn</li></ul>
-          <a class="repo-link" href="https://github.com/Vaikhashi/FaceRecognitionTask">View repository</a>
+          <ul class="tags"><li>PyTorch</li><li>InsightFace</li><li>ResNet18</li><li>OpenCV</li></ul>
+          <div class="feature-actions">
+            <button class="run-btn" type="button" data-demo="face"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>Run demo</button>
+            <a class="repo-link" href="https://github.com/Vaikhashi/FaceRecognitionTask">View code</a>
+          </div>
         </article>
       </div>
 
       <div class="repos">
-        <a class="repo" href="https://github.com/Vaikhashi/labour-Connect">
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#a91e50" title="EJS"></span>Labour Connect</span>
-          <span class="repo-desc">Local workers find jobs and employers find help, with job posts, applications, tool renting and chat. <em>Node.js, Express, EJS, MongoDB, Firebase</em></span>
-          <span class="repo-year">2025</span>
-        </a>
-        <a class="repo" href="https://github.com/Vaikhashi/Pizza-Delivery-App---Level-3">
+          <span class="repo-desc">Local workers and employers find each other: job posts, applications and chat. <em>Node.js, Express, MongoDB, Firebase</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="labour">▶ Demo</button><a href="https://github.com/Vaikhashi/labour-Connect">Code</a></span>
+        </div>
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#f1e05a" title="JavaScript"></span>Pizza Delivery</span>
-          <span class="repo-desc">Sign up, build a cart, place and track orders, with an admin side for menu and orders. <em>Node.js, Express, MongoDB, bcrypt</em></span>
-          <span class="repo-year">2025</span>
-        </a>
-        <a class="repo" href="https://github.com/Vaikhashi/VOIS_AICTE_Oct2025_VaikhashiA">
+          <span class="repo-desc">Build a cart, place an order and track it, with an admin side. <em>Node.js, Express, MongoDB</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="pizza">▶ Demo</button><a href="https://github.com/Vaikhashi/Pizza-Delivery-App---Level-3">Code</a></span>
+        </div>
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#DA5B0B" title="Jupyter Notebook"></span>Netflix and Airbnb EDA</span>
-          <span class="repo-desc">Release trends, genres, regions and pricing patterns pulled out of two public datasets. <em>Pandas, NumPy, Seaborn</em></span>
-          <span class="repo-year">2025</span>
-        </a>
-        <a class="repo" href="https://github.com/Vaikhashi/pong-game">
+          <span class="repo-desc">Release trends and top genres from 7,779 Netflix titles, plus 102,599 Airbnb listings. <em>Pandas, Seaborn</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="eda">▶ Demo</button><a href="https://github.com/Vaikhashi/VOIS_AICTE_Oct2025_VaikhashiA">Code</a></span>
+        </div>
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#f1e05a" title="JavaScript"></span>Pong</span>
-          <span class="repo-desc">Responsive Pong against a computer opponent, first to five, playable on a phone. <em>Vanilla JS, Canvas</em></span>
-          <span class="repo-year">2025</span>
-        </a>
-        <a class="repo" href="https://github.com/Vaikhashi/week3-library-system">
+          <span class="repo-desc">Pong against a computer opponent, first to five. <em>Vanilla JS, Canvas</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="pong">▶ Play</button><a href="https://github.com/Vaikhashi/pong-game">Code</a></span>
+        </div>
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#b07219" title="Java"></span>Library system</span>
-          <span class="repo-desc">Console app for books, members, loans and overdue checks, saved to files. <em>Java, OOP, File I/O</em></span>
-          <span class="repo-year">2026</span>
-        </a>
-        <a class="repo" href="https://github.com/Vaikhashi/week2-task-manager">
+          <span class="repo-desc">Console app for books, members, loans and overdue checks. <em>Java, OOP, File I/O</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="library">▶ Demo</button><a href="https://github.com/Vaikhashi/week3-library-system">Code</a></span>
+        </div>
+        <div class="repo">
           <span class="repo-name"><span class="lang" style="--lc:#e34c26" title="HTML"></span>Task manager</span>
-          <span class="repo-desc">Add, complete and filter tasks that survive a page reload. <em>Vanilla JS, localStorage</em></span>
-          <span class="repo-year">2025</span>
-        </a>
+          <span class="repo-desc">Add, complete and filter tasks. <em>Vanilla JS, localStorage</em></span>
+          <span class="repo-acts"><button class="chip-btn" type="button" data-demo="tasks">▶ Try it</button><a href="https://github.com/Vaikhashi/week2-task-manager">Code</a></span>
+        </div>
       </div>
     </div>
   </section>
@@ -755,6 +1012,22 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
   </div>
   <ul class="pal-list" id="palList" role="listbox"></ul>
   <div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> to move</span><span><kbd>Enter</kbd> to run</span><span><kbd>Esc</kbd> to close</span></div>
+</dialog>
+
+<dialog class="demo" id="demo" aria-labelledby="demoTitle">
+  <div class="demo-bar">
+    <h2 id="demoTitle">demo</h2>
+    <span class="demo-kind" id="demoKind"></span>
+    <button class="demo-close" id="demoClose" type="button" aria-label="Close demo"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  </div>
+  <div class="demo-stage" id="demoStage"></div>
+  <div class="demo-foot">
+    <p id="demoCap"></p>
+    <div class="acts">
+      <button class="chip-btn" id="demoReplay" type="button">Replay</button>
+      <a class="chip-btn" id="demoCode" href="https://github.com/Vaikhashi">View code</a>
+    </div>
+  </div>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -947,11 +1220,13 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
     { cmd: "email", desc: "Copy my email address", run: copyEmail },
     { cmd: "github", desc: "Open my GitHub", run: function () { location.href = "https://github.com/Vaikhashi"; } },
     { cmd: "linkedin", desc: "Open my LinkedIn", run: function () { location.href = "https://www.linkedin.com/in/vaikhashi-a-7ab540237"; } },
-    { cmd: "pong", desc: "Open the Pong repo", run: function () { location.href = "https://github.com/Vaikhashi/pong-game"; } },
     { cmd: "theme", desc: "Switch light and dark", run: toggleTheme },
     { cmd: "launch", desc: "You'll see", run: launch },
     { cmd: "help", desc: "Show every command", run: function () { input.value = ""; render(); input.focus(); return true; } }
   ];
+  window.__addCommands = function (list) { commands.splice.apply(commands, [commands.length - 2, 0].concat(list)); };
+  window.__toast = toast;
+  window.__redrawEdges = drawEdges;
   var shown = [], sel = 0;
   function render() {
     var q = input.value.trim().toLowerCase();
@@ -1035,6 +1310,804 @@ dialog.palette::backdrop { background: rgba(13, 17, 48, .45); backdrop-filter: b
   }
 
   console.log("%cHi, fellow dev. Press / on the page for the command palette.", "font:600 13px monospace;color:#5A3ED0");
+})();
+</script>
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var NS = "http://www.w3.org/2000/svg";
+  var PLAY = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>';
+
+  function h(tag, props, kids) {
+    var el = document.createElement(tag);
+    if (props) for (var k in props) {
+      if (k === "class") el.className = props[k];
+      else if (k === "text") el.textContent = props[k];
+      else if (k === "html") el.innerHTML = props[k];
+      else if (k === "style") el.style.cssText = props[k];
+      else el.setAttribute(k, props[k]);
+    }
+    (kids || []).forEach(function (c) { if (c != null) el.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return el;
+  }
+  function sv(tag, attrs, parent) {
+    var el = document.createElementNS(NS, tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  /* ================= git graph ================= */
+  var graphSvg = document.getElementById("gitGraph");
+  var commitsEl = document.getElementById("commits");
+  function drawGit() {
+    if (!graphSvg) return;
+    var base = graphSvg.parentNode.getBoundingClientRect();
+    var rows = [].slice.call(commitsEl.children);
+    var X = [14, 36];
+    var pts = rows.map(function (li) {
+      var hb = li.querySelector(".c-hash").getBoundingClientRect();
+      return { lane: +li.dataset.lane, y: Math.round(hb.top + hb.height / 2 - base.top), kind: li.dataset.dot || "" };
+    });
+    graphSvg.setAttribute("viewBox", "0 0 44 " + Math.ceil(base.height));
+    graphSvg.style.height = base.height + "px";
+    graphSvg.innerHTML = "";
+    var main = pts.filter(function (p) { return p.lane === 0; });
+    var br = pts.filter(function (p) { return p.lane === 1; });
+    var merge = pts.filter(function (p) { return p.kind === "merge"; })[0];
+    var root = pts.filter(function (p) { return p.kind === "root"; })[0];
+    sv("path", { class: "ln l0", d: "M" + X[0] + "," + main[0].y + " L" + X[0] + "," + main[main.length - 1].y }, graphSvg);
+    if (br.length && merge && root) {
+      var top = br[0].y, bot = br[br.length - 1].y, g1 = (root.y - bot) / 2, g2 = (top - merge.y) / 2;
+      sv("path", { class: "ln l1", d: "M" + X[0] + "," + root.y + " C" + X[0] + "," + (root.y - g1) + " " + X[1] + "," + (bot + g1) + " " + X[1] + "," + bot +
+        " L" + X[1] + "," + top + " C" + X[1] + "," + (top - g2) + " " + X[0] + "," + (merge.y + g2) + " " + X[0] + "," + merge.y }, graphSvg);
+    }
+    var violet = cssVar("--violet"), teal = cssVar("--teal"), surf = cssVar("--surface");
+    pts.forEach(function (p) {
+      var x = X[p.lane], col = p.lane ? teal : violet;
+      if (p.kind === "head") {
+        sv("circle", { cx: x, cy: p.y, r: 9, fill: "none", stroke: col, "stroke-opacity": .3, "stroke-width": 4 }, graphSvg);
+        sv("circle", { cx: x, cy: p.y, r: 6, fill: col, stroke: col }, graphSvg);
+      } else if (p.kind === "merge") {
+        sv("circle", { cx: x, cy: p.y, r: 6.5, fill: surf, stroke: col }, graphSvg);
+        sv("circle", { cx: x, cy: p.y, r: 2.5, fill: col, stroke: "none" }, graphSvg);
+      } else {
+        sv("circle", { cx: x, cy: p.y, r: 5.5, fill: surf, stroke: col }, graphSvg);
+      }
+    });
+  }
+  document.querySelectorAll("[data-diff]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var pre = b.closest(".commit").querySelector(".diff");
+      var open = pre.hidden;
+      pre.hidden = !open;
+      b.setAttribute("aria-expanded", String(open));
+      b.textContent = open ? "Hide diff" : "Show diff";
+      drawGit();
+    });
+  });
+  if ("ResizeObserver" in window && commitsEl) new ResizeObserver(drawGit).observe(commitsEl);
+  window.addEventListener("resize", drawGit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawGit); else window.addEventListener("load", drawGit);
+  new MutationObserver(function () { drawGit(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  /* ================= demo player ================= */
+  var dlg = document.getElementById("demo");
+  var stage = document.getElementById("demoStage");
+  var titleEl = document.getElementById("demoTitle");
+  var kindEl = document.getElementById("demoKind");
+  var capEl = document.getElementById("demoCap");
+  var codeLink = document.getElementById("demoCode");
+  var replayBtn = document.getElementById("demoReplay");
+  var CANCEL = { cancelled: true };
+  var run = null, currentKey = null;
+
+  function stopRun() {
+    if (!run) return;
+    run.dead = true;
+    run.cleanups.forEach(function (f) { try { f(); } catch (e) {} });
+    run = null;
+  }
+  function sleep(r, ms) {
+    return new Promise(function (res, rej) {
+      setTimeout(function () { if (r.dead) rej(CANCEL); else res(); }, reduce ? Math.min(ms, 250) : ms);
+    });
+  }
+  function typeText(r, el, text, cps) {
+    if (reduce) { el.textContent += text; return Promise.resolve(); }
+    var i = 0;
+    return new Promise(function (res, rej) {
+      (function next() {
+        if (r.dead) return rej(CANCEL);
+        if (i >= text.length) return res();
+        el.textContent += text[i++];
+        setTimeout(next, 1000 / (cps || 45));
+      })();
+    });
+  }
+  function tap(el) {
+    if (!el) return;
+    el.classList.remove("pulse-click");
+    void el.offsetWidth;
+    el.classList.add("pulse-click");
+  }
+  function scrollEnd(el) {
+    el.scrollTo({ top: el.scrollHeight, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function openDemo(key) {
+    var d = DEMOS[key];
+    if (!d) return;
+    currentKey = key;
+    titleEl.textContent = d.title;
+    kindEl.textContent = d.kind;
+    capEl.textContent = d.caption;
+    if (d.repo) { codeLink.href = d.repo; codeLink.hidden = false; } else { codeLink.hidden = true; }
+    replayBtn.textContent = d.kind === "Playable" ? "Restart" : "Replay";
+    if (!dlg.open) { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); }
+    startDemo();
+  }
+  function startDemo() {
+    stopRun();
+    var r = { dead: false, cleanups: [] };
+    run = r;
+    stage.innerHTML = "";
+    stage.scrollTop = 0;
+    var p = DEMOS[currentKey].run(stage, r);
+    if (p && p.catch) p.catch(function (e) { if (e !== CANCEL) console.error(e); });
+  }
+  dlg.addEventListener("close", function () { stopRun(); stage.innerHTML = ""; });
+  document.getElementById("demoClose").addEventListener("click", function () { dlg.close(); });
+  replayBtn.addEventListener("click", startDemo);
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-demo]");
+    if (b) { e.preventDefault(); openDemo(b.dataset.demo); }
+  });
+
+  /* ================= demos ================= */
+  var DEMOS = {};
+
+  /* ---- agent run (work) ---- */
+  DEMOS.agent = {
+    title: "invoice-agent", kind: "Animated walkthrough", repo: "",
+    caption: "Illustration with sample data. The agents I build at work are client work and stay private.",
+    run: async function (st, r) {
+      var split = h("div", { class: "d-split" });
+      var flow = h("div", { class: "ag-flow" });
+      var term = h("div", { class: "d-term" });
+      split.append(flow, term);
+      st.append(split);
+      var nodes = [
+        ["trigger", "Invoice uploaded", "PDF"], ["code", "Extract fields", "OCR"],
+        ["business object", "Find the PO and supplier", "REST"], ["code", "Validate and score", "7 checks"],
+        ["router", "Route by risk", ""], ["action", "Create approval task", "BPM"], ["return", "Reply to the user", ""]
+      ];
+      var els = nodes.map(function (n) {
+        var el = h("div", { class: "ag-node" }, [h("span", { class: "ag-ico" }), h("div", null, [h("span", { class: "t", text: n[0] }), h("b", { text: n[1] })]), h("span", { class: "ms", text: n[2] })]);
+        flow.append(el);
+        return el;
+      });
+      var logs = [
+        [0, [["dim", "[trigger] "], ["", "file=INV-1042.pdf pages=2"]]],
+        [1, [["dim", "[extract] "], ["key", "supplier"], ["", "="], ["str", "\"Acme Supplies Ltd\""], ["", " invoice="], ["str", "INV-1042"], ["", " amount="], ["str", "4,250.00 USD"]]],
+        [2, [["dim", "[lookup]  "], ["", "GET /purchaseOrders?q=OrderNumber=PO-7781 "], ["ok", "200, 1 row"]]],
+        [2, [["dim", "[lookup]  "], ["", "supplier bank account "], ["ok", "verified"]]],
+        [3, [["dim", "[score]   "], ["", "6 of 7 checks passed, risk="], ["ok", "low"]]],
+        [4, [["dim", "[route]   "], ["", "risk=low, taking the approval path"]]],
+        [5, [["dim", "[action]  "], ["", "approval task created for the AP manager"]]],
+        [6, [["dim", "[return]  "], ["str", "\"INV-1042 matches PO-7781 and is waiting for approval.\""]]]
+      ];
+      term.append(h("span", { class: "dim", text: "$ run agent invoice_intake --file INV-1042.pdf\n\n" }));
+      await sleep(r, 600);
+      for (var i = 0; i < els.length; i++) {
+        els[i].classList.add("run");
+        await sleep(r, 700);
+        var mine = logs.filter(function (l) { return l[0] === i; });
+        for (var j = 0; j < mine.length; j++) {
+          var line = h("span");
+          mine[j][1].forEach(function (seg) { line.append(h("span", { class: seg[0], text: seg[1] })); });
+          line.append("\n");
+          term.append(line);
+          term.scrollTop = term.scrollHeight;
+          await sleep(r, 280);
+        }
+        els[i].classList.remove("run");
+        els[i].classList.add("done");
+        await sleep(r, 160);
+      }
+      term.append(h("span", { class: "ok", text: "\n✓ run finished\n" }));
+    }
+  };
+
+  /* ---- campusflow ---- */
+  DEMOS.campusflow = {
+    title: "campusflow", kind: "Animated walkthrough", repo: "https://github.com/Vaikhashi/Campusflow",
+    caption: "Real CampusFlow endpoints and the responses the code returns, with sample data.",
+    run: async function (st, r) {
+      var split = h("div", { class: "d-split" });
+      var term = h("div", { class: "d-term" });
+      var app = h("div", { class: "d-panel cf-app" });
+      var top = h("div", { class: "cf-top" }, [h("strong", { text: "CampusFlow" })]);
+      var roles = {};
+      ["CLUB_ADMIN", "MEMBER", "PRINCIPAL"].forEach(function (k) { roles[k] = h("span", { class: "cf-role", text: k }); top.append(roles[k]); });
+      var body = h("div", { class: "cf-body" }, [h("div", { class: "cf-empty", text: "Signed out" })]);
+      app.append(top, body);
+      split.append(term, app);
+      st.append(split);
+      function role(k) { for (var x in roles) roles[x].classList.toggle("on", x === k); }
+      async function req(method, path, data, status, resp, bad) {
+        var line = h("span", { class: "key" });
+        term.append(line);
+        await typeText(r, line, method + " " + path, 40);
+        term.append("\n");
+        if (data) term.append(h("span", { class: "str", text: JSON.stringify(data) + "\n" }));
+        term.scrollTop = term.scrollHeight;
+        await sleep(r, 500);
+        term.append(h("span", { class: bad ? "bad" : "ok", text: "← " + status + " " }), h("span", { class: "dim", text: resp + "\n\n" }));
+        term.scrollTop = term.scrollHeight;
+        await sleep(r, 450);
+      }
+      term.append(h("span", { class: "dim", text: "# FastAPI backend, role read from the JWT\n\n" }));
+      await sleep(r, 500);
+      role("CLUB_ADMIN");
+      await req("POST", "/login", { email: "admin@robotics.club", password: "••••••" }, "200", '{"access_token": "eyJhbGciOiJIUzI1NiJ9…"}');
+      body.innerHTML = "";
+      var empty = h("div", { class: "cf-empty", text: "No events yet" });
+      body.append(empty);
+      await req("POST", "/events", { title: "Robotics workshop", date: "2026-11-20", club_id: 1 }, "200", '{"message": "Event created"}');
+      empty.remove();
+      var status = h("span", { class: "cf-status", text: "PLANNED" });
+      var ev = h("div", { class: "cf-event" }, [h("header", null, [h("b", { text: "Robotics workshop" }), status]), h("div", { class: "cf-meta", text: "20 Nov 2026, Robotics club" })]);
+      body.append(ev);
+      await req("POST", "/tasks", { title: "Book the seminar hall", deadline: "2026-11-14", event_id: 1, assigned_to: 7 }, "200", '{"message": "Task created"}');
+      var task = h("div", { class: "cf-task" }, [h("span", { class: "cf-box" }), h("span", { text: "Book the seminar hall" }), h("small", { text: "member 7, due 14 Nov" })]);
+      ev.append(task);
+      role("MEMBER");
+      await req("GET", "/notifications/my-deadlines", null, "200", '[{"id": 1, "title": "Book the seminar hall", "deadline": "2026-11-14"}]');
+      task.classList.add("hl");
+      await req("GET", "/principal/clubs", null, "403", '{"detail": "Access denied"}', true);
+      var toastEl = h("div", { class: "cf-toast", text: "403: only the principal can see every club" });
+      body.append(toastEl);
+      await sleep(r, 1400);
+      toastEl.remove();
+      await req("PUT", "/tasks/1/complete", null, "200", '{"message": "Task marked as completed"}');
+      task.classList.remove("hl");
+      task.classList.add("done");
+      role("CLUB_ADMIN");
+      await req("PUT", "/events/1/complete", null, "200", '{"message": "Event marked as completed"}');
+      status.textContent = "COMPLETED";
+      status.classList.add("done");
+      role("PRINCIPAL");
+      await req("GET", "/principal/events", null, "200", '[{"id": 1, "title": "Robotics workshop", "status": "COMPLETED"}]');
+      term.append(h("span", { class: "cur" }));
+      term.scrollTop = term.scrollHeight;
+    }
+  };
+
+  /* ---- face recognition ---- */
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function drawFace(parent, x, y, size, n, f, seed, noise) {
+    var g = sv("g", {}, parent), c = size / n, R = rng(seed);
+    for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) {
+      var u = (j + .5) / n, v = (i + .5) / n;
+      var dx = (u - .5) / f.w, dy = (v - .56) / .4;
+      var val = .06;
+      if (dx * dx + dy * dy < 1) val = .26;
+      if (v < .2 + f.hair * .14 && Math.pow((u - .5) / (f.w + .06), 2) + Math.pow((v - .5) / .48, 2) < 1) val = .78;
+      if (Math.abs(v - f.eyeY) < .055 && (Math.abs(u - (.5 - f.gap)) < .07 || Math.abs(u - (.5 + f.gap)) < .07)) val = .9;
+      if (Math.abs(u - .5) < .035 && v > f.eyeY + .06 && v < f.eyeY + .2) val = .5;
+      if (Math.abs(v - f.mouthY) < .04 && Math.abs(u - .5) < f.mouth) val = .72;
+      val = Math.max(0, Math.min(1, val + (R() - .5) * noise));
+      sv("rect", { x: (x + j * c).toFixed(2), y: (y + i * c).toFixed(2), width: (c + .4).toFixed(2), height: (c + .4).toFixed(2), fill: "currentColor", "fill-opacity": val.toFixed(2) }, g);
+    }
+    return g;
+  }
+  DEMOS.face = {
+    title: "face-recognition", kind: "Animated walkthrough", repo: "https://github.com/Vaikhashi/FaceRecognitionTask",
+    caption: "Illustration of the pipeline in the repo. The real ROC and precision-recall results are in the report PDF.",
+    run: async function (st, r) {
+      var narrow = st.clientWidth < 600;
+      var L = narrow ? {
+        vb: "0 0 380 500", q: { x: 20, y: 16, s: 120 }, ql: [[160, 64], [160, 80]],
+        arrow: "M80 150 V 178", emb: { x: 22, cy: 236, amp: 46, step: 7, x2: 360, label: [22, 300] },
+        gal: [22, 112, 202, 292].map(function (x) { return { x: x, y: 352 }; }), galLabel: [22, 344], gs: 56,
+        bar: function (g) { return { x: g.x, y: g.y + 66, w: 62 }; }, simLabel: [22, 456],
+        link: function (g) { return "M191 310 C 191 330, " + (g.x + 28) + " 326, " + (g.x + 28) + " " + (g.y - 4); },
+        match: function (g) { return [g.x, g.y + 100]; }
+      } : {
+        vb: "0 0 760 300", q: { x: 30, y: 70, s: 130 }, ql: [[30, 225], [30, 240]],
+        arrow: "M180 135 H 215", emb: { x: 225, cy: 135, amp: 55, step: 6, x2: 513, label: [225, 228] },
+        gal: [18, 86, 154, 222].map(function (y) { return { x: 580, y: y }; }), galLabel: [580, 12], gs: 56,
+        bar: function (g) { return { x: 644, y: g.y + 22, w: 100 }; }, simLabel: [644, 12],
+        link: function (g) { return "M520 135 C 545 135, 550 " + (g.y + 28) + ", 575 " + (g.y + 28); },
+        match: function (g) { return [644, g.y + 50]; }
+      };
+      var wrap = h("div", { class: "fr-wrap" });
+      var scripts = ["split_dataset.py", "baseline.py", "fine_tune.py", "evaluate_fine_tuned.py"];
+      var stepsEl = h("div", { class: "fr-steps" });
+      var stepEls = scripts.map(function (s) { var e = h("span", { class: "fr-step", text: s }); stepsEl.append(e); return e; });
+      var note = h("p", { class: "fr-note" });
+      var svg = sv("svg", { class: "fr-svg", viewBox: L.vb, role: "img", "aria-label": "Face recognition pipeline illustration" });
+      wrap.append(stepsEl, note, svg);
+      st.append(wrap);
+      var teal = cssVar("--teal"), violet = cssVar("--violet");
+      sv("filter", { id: "frBlur" }, svg).appendChild(sv("feGaussianBlur", { stdDeviation: "2.2" }));
+      function txt(pos, t, cls) { var e = sv("text", { x: pos[0], y: pos[1] }, svg); if (cls) e.setAttribute("class", cls); e.textContent = t; return e; }
+      function step(i, text) {
+        stepEls.forEach(function (e, k) { e.classList.toggle("on", k === i); e.classList.toggle("done", k < i); });
+        note.textContent = text;
+      }
+      var ids = [
+        { w: .34, hair: .2, eyeY: .44, gap: .14, mouthY: .76, mouth: .1 },
+        { w: .3, hair: .8, eyeY: .47, gap: .11, mouthY: .78, mouth: .13 },
+        { w: .37, hair: .5, eyeY: .42, gap: .16, mouthY: .74, mouth: .08 },
+        { w: .32, hair: .05, eyeY: .45, gap: .12, mouthY: .77, mouth: .12 }
+      ];
+
+      step(0, "Split each person's photos into training and validation sets, high quality and low quality.");
+      var qg = drawFace(svg, L.q.x, L.q.y, L.q.s, 11, ids[2], 7, .35);
+      qg.setAttribute("filter", "url(#frBlur)");
+      qg.style.opacity = 0; qg.style.transition = "opacity .5s";
+      txt(L.ql[0], "query", "lbl-strong");
+      txt(L.ql[1], "low quality, 11×11 px");
+      txt(L.galLabel, "gallery");
+      var gal = L.gal.map(function (g, k) {
+        var e = drawFace(svg, g.x, g.y, L.gs, 16, ids[k], 30 + k, .06);
+        e.style.opacity = 0; e.style.transition = "opacity .4s " + (k * .1) + "s";
+        return e;
+      });
+      await sleep(r, 150);
+      qg.style.opacity = 1;
+      gal.forEach(function (g) { g.style.opacity = 1; });
+      await sleep(r, 1800);
+
+      step(1, "Detect the face, find landmarks, and turn it into a 512-number embedding with InsightFace.");
+      var pad = 6, bw = L.q.s + pad * 2;
+      var box = sv("rect", { x: L.q.x - pad, y: L.q.y - pad, width: bw, height: bw, rx: 4, fill: "none", stroke: teal, "stroke-width": 2.5 }, svg);
+      box.style.strokeDasharray = bw * 4; box.style.strokeDashoffset = bw * 4;
+      box.style.transition = "stroke-dashoffset .8s ease";
+      await sleep(r, 50);
+      box.style.strokeDashoffset = 0;
+      await sleep(r, 800);
+      [[.37, .37], [.63, .37], [.5, .52], [.4, .69], [.6, .69]].forEach(function (p) {
+        sv("circle", { cx: L.q.x + p[0] * L.q.s, cy: L.q.y + p[1] * L.q.s, r: 3.5, fill: violet }, svg);
+      });
+      await sleep(r, 500);
+      sv("path", { d: L.arrow, stroke: "currentColor", "stroke-opacity": .4, "stroke-width": 1.5, fill: "none" }, svg);
+      var E = L.emb, R = rng(11), bars = [];
+      sv("line", { x1: E.x - 3, x2: E.x2, y1: E.cy, y2: E.cy, stroke: "currentColor", "stroke-opacity": .25 }, svg);
+      for (var k = 0; k < 48; k++) {
+        var v = (R() - .5) * 2, hgt = Math.max(2, Math.abs(v) * E.amp);
+        var b = sv("rect", { x: E.x + k * E.step, y: v > 0 ? E.cy - hgt : E.cy, width: E.step - 2, height: hgt, rx: 1, fill: k % 2 ? teal : violet }, svg);
+        b.style.transformBox = "fill-box"; b.style.transformOrigin = v > 0 ? "bottom" : "top";
+        b.style.transform = "scaleY(0)"; b.style.transition = "transform .3s ease " + (k * .02) + "s";
+        bars.push(b);
+      }
+      txt(E.label, "512-d embedding (48 shown)");
+      await sleep(r, 50);
+      bars.forEach(function (b) { b.style.transform = "scaleY(1)"; });
+      await sleep(r, 1500);
+
+      note.textContent = "Compare the query's embedding with every person in the gallery using cosine similarity.";
+      var links = [], sims = [];
+      L.gal.forEach(function (g, k) {
+        links.push(sv("path", { d: L.link(g), fill: "none", stroke: "currentColor", "stroke-opacity": .3, "stroke-width": 1.5 }, svg));
+        var B = L.bar(g);
+        sv("rect", { x: B.x, y: B.y, width: B.w, height: 12, rx: 3, fill: "currentColor", "fill-opacity": .08 }, svg);
+        var s = sv("rect", { x: B.x, y: B.y, width: B.w, height: 12, rx: 3, fill: k === 2 ? teal : "currentColor", "fill-opacity": k === 2 ? 1 : .35 }, svg);
+        s.style.transformBox = "fill-box"; s.style.transformOrigin = "left"; s.style.transform = "scaleX(0)"; s.style.transition = "transform .7s ease";
+        sims.push(s);
+      });
+      txt(L.simLabel, "similarity");
+      await sleep(r, 60);
+      [.55, .5, .6, .52].forEach(function (v, k) { sims[k].style.transform = "scaleX(" + v + ")"; });
+      await sleep(r, 2000);
+
+      step(2, "Fine-tune a ResNet18 on low-quality faces so blurry photos land closer to the right person.");
+      await sleep(r, 600);
+      [.32, .28, .86, .3].forEach(function (v, k) { sims[k].style.transform = "scaleX(" + v + ")"; });
+      links[2].setAttribute("stroke", teal); links[2].setAttribute("stroke-opacity", 1); links[2].setAttribute("stroke-width", 2.5);
+      await sleep(r, 900);
+      var G = L.gal[2];
+      var ring = sv("rect", { x: G.x - 4, y: G.y - 4, width: L.gs + 8, height: L.gs + 8, rx: 6, fill: "none", stroke: teal, "stroke-width": 2.5 }, svg);
+      ring.style.opacity = 0; ring.style.transition = "opacity .4s";
+      await sleep(r, 30);
+      ring.style.opacity = 1;
+      var m = txt(L.match(G), "match", "lbl-strong");
+      m.style.fill = teal;
+      await sleep(r, 1800);
+
+      step(3, "Evaluate before and after with ROC, precision-recall and similarity distributions. The plots are in the report.");
+      stepEls[3].classList.add("done");
+    }
+  };
+
+  /* ---- labour connect ---- */
+  DEMOS.labour = {
+    title: "labour-connect", kind: "Animated walkthrough", repo: "https://github.com/Vaikhashi/labour-Connect",
+    caption: "The app's main flow, using screen names from the repo and sample data.",
+    run: async function (st, r) {
+      var who = h("div", { class: "lc-who" });
+      var phone = h("div", { class: "lc-phone" });
+      st.append(h("div", { class: "lc-wrap" }, [h("div", null, [who, phone])]));
+      var cur = null;
+      async function show(label, screen) {
+        who.textContent = label;
+        screen.classList.add("lc-screen", "off");
+        phone.append(screen);
+        await sleep(r, 30);
+        screen.classList.remove("off");
+        if (cur) { var old = cur; old.classList.add("gone"); setTimeout(function () { old.remove(); }, 500); }
+        cur = screen;
+        await sleep(r, 550);
+      }
+      function field(label) { var v = h("div"); return { el: h("div", { class: "lc-field" }, [h("small", { text: label }), v]), v: v }; }
+
+      var f1 = field("Job title"), f2 = field("Location"), f3 = field("Pay"), post = h("div", { class: "lc-btn", text: "Post job" });
+      await show("Employer's phone", h("div", null, [h("h4", { text: "Post a Job" }), f1.el, f2.el, f3.el, post]));
+      await typeText(r, f1.v, "Paint a 2BHK flat", 22);
+      await typeText(r, f2.v, "Kochi", 22);
+      await typeText(r, f3.v, "₹2,500 a day", 22);
+      await sleep(r, 300); tap(post); await sleep(r, 700);
+
+      var newCard = h("div", { class: "lc-card new" }, [h("b", { text: "Paint a 2BHK flat" }), h("span", { text: "Kochi, ₹2,500 a day" })]);
+      var apply = h("div", { class: "lc-btn", text: "Apply" });
+      var feed = h("div", null, [h("h4", { text: "Explore Tasks Here!" }),
+        h("div", { class: "lc-card" }, [h("b", { text: "Garden cleanup" }), h("span", { text: "Aluva, ₹1,200 a day" })]),
+        h("div", { class: "lc-card" }, [h("b", { text: "Fix a kitchen tap" }), h("span", { text: "Kakkanad, ₹800" })])]);
+      await show("Worker's phone", feed);
+      await sleep(r, 500);
+      feed.insertBefore(newCard, feed.children[1]);
+      newCard.append(apply);
+      await sleep(r, 1000); tap(apply); await sleep(r, 500);
+      await show("Worker's phone", h("div", null, [h("div", { class: "lc-success" }, [h("i"), h("h4", { text: "Application Successful!" }), h("span", { class: "cf-meta", text: "The employer will see your profile." })])]));
+      await sleep(r, 1200);
+
+      var accept = h("div", { class: "lc-btn", text: "Accept" });
+      var appl = h("div", { class: "lc-card" }, [h("b", { text: "Ravi K." }), h("span", { text: "Painter, 6 years" }), accept]);
+      var head = h("h4", { text: "Pending Applications" });
+      await show("Employer's phone", h("div", null, [h("span", { class: "cf-meta", text: "Applicants for Paint a 2BHK flat" }), head, appl]));
+      await sleep(r, 900); tap(accept); await sleep(r, 400);
+      head.textContent = "Accepted Applications";
+      accept.textContent = "Message"; accept.className = "lc-btn ghost";
+      await sleep(r, 1000); tap(accept); await sleep(r, 300);
+
+      var chat = h("div", null, [h("h4", { text: "Ravi K." })]);
+      await show("Employer's phone", chat);
+      var msgs = [["me", "Can you start Saturday at 9?"], ["them", "Yes. I'll bring rollers and primer."], ["me", "Great, see you then."]];
+      for (var i = 0; i < msgs.length; i++) { await sleep(r, 800); chat.append(h("div", { class: "lc-bubble " + msgs[i][0], text: msgs[i][1] })); }
+    }
+  };
+
+  /* ---- pizza ---- */
+  function pizzaIcon(kind) {
+    var s = sv("svg", { viewBox: "0 0 48 48", width: 48, height: 48, "aria-hidden": "true" });
+    sv("circle", { cx: 24, cy: 24, r: 22, fill: "#D99A3A" }, s);
+    sv("circle", { cx: 24, cy: 24, r: 18, fill: "#F2CF6B" }, s);
+    var spots = [[16, 17], [30, 15], [24, 26], [14, 30], [32, 31], [22, 36]];
+    spots.forEach(function (p, i) {
+      if (kind === "Pepperoni") sv("circle", { cx: p[0], cy: p[1], r: 4, fill: "#C2412D" }, s);
+      else if (kind === "Veggie") sv("circle", { cx: p[0], cy: p[1], r: i % 2 ? 2.6 : 3.2, fill: i % 2 ? "#2F2F2F" : "#3E8E41" }, s);
+      else if (i % 2 === 0) sv("ellipse", { cx: p[0], cy: p[1], rx: 4, ry: 2.2, fill: "#3E8E41", transform: "rotate(" + (i * 40) + " " + p[0] + " " + p[1] + ")" }, s);
+      else sv("circle", { cx: p[0], cy: p[1], r: 3.4, fill: "#D9452B", "fill-opacity": .85 }, s);
+    });
+    return s;
+  }
+  DEMOS.pizza = {
+    title: "pizza-delivery", kind: "Playable", repo: "https://github.com/Vaikhashi/Pizza-Delivery-App---Level-3",
+    caption: "Menu and prices from the repo. It plays itself first, then tap Add to build your own order.",
+    run: async function (st, r) {
+      var menu = [{ name: "Margherita", price: 10 }, { name: "Pepperoni", price: 12 }, { name: "Veggie", price: 11 }];
+      var cart = {}, ordered = false, auto = true;
+      var menuEl = h("div", { class: "pz-menu" }, [h("h4", { text: "Available Pizzas", style: "margin:0 0 .2rem;font-size:.9375rem" })]);
+      var addBtns = {};
+      menu.forEach(function (m) {
+        var b = h("button", { class: "pz-add", type: "button", text: "Add" });
+        b.addEventListener("click", function (e) { if (e.isTrusted) auto = false; add(m.name); });
+        addBtns[m.name] = b;
+        menuEl.append(h("div", { class: "d-panel pz-item" }, [pizzaIcon(m.name), h("div", null, [h("b", { text: m.name }), h("span", { text: "$" + m.price })]), b]));
+      });
+      var lines = h("div"), total = h("span", { text: "$0" });
+      var orderBtn = h("button", { class: "pz-order", type: "button", text: "Place order", disabled: "" });
+      orderBtn.addEventListener("click", function (e) { if (e.isTrusted) auto = false; place().catch(function () {}); });
+      var cartEl = h("div", { class: "d-panel pz-cart" }, [h("h4", { text: "Your cart" }), lines, h("div", { class: "pz-total" }, [h("span", { text: "Total" }), total]), orderBtn]);
+      var stepNames = ["Order placed", "Preparing", "In the oven", "Out for delivery", "Delivered"];
+      var steps = h("ul", { class: "pz-steps" });
+      var stepEls = stepNames.map(function (n) { var li = h("li", null, [h("i"), n]); steps.append(li); return li; });
+      var trackTitle = h("h4", { text: "Track your order" });
+      var trackEl = h("div", { class: "d-panel pz-track" }, [trackTitle, steps]);
+      var hint = h("p", { class: "pz-hint", text: "Playing a sample order…" });
+      st.append(h("div", { class: "pz" }, [menuEl, h("div", { class: "pz-side" }, [cartEl, trackEl, hint])]));
+      st.addEventListener("pointerdown", function () { if (auto) { auto = false; hint.textContent = "Your turn. Tap Add to build an order."; } }, { once: true });
+
+      function render() {
+        lines.innerHTML = "";
+        var sum = 0;
+        menu.forEach(function (m) {
+          var q = cart[m.name]; if (!q) return;
+          sum += q * m.price;
+          lines.append(h("div", { class: "pz-line" }, [h("span", { text: q + " × " + m.name }), h("span", { text: "$" + q * m.price })]));
+        });
+        if (!sum) lines.append(h("div", { class: "cf-meta", text: "Nothing here yet" }));
+        total.textContent = "$" + sum;
+        if (sum && !ordered) orderBtn.removeAttribute("disabled"); else orderBtn.setAttribute("disabled", "");
+      }
+      function add(name) {
+        if (ordered) { reset(); }
+        cart[name] = (cart[name] || 0) + 1;
+        render();
+      }
+      function reset() {
+        ordered = false; cart = {};
+        stepEls.forEach(function (li) { li.className = ""; });
+        trackTitle.textContent = "Track your order";
+        orderBtn.textContent = "Place order";
+        render();
+      }
+      async function place() {
+        if (ordered) return;
+        ordered = true;
+        orderBtn.textContent = "Order #1024 placed";
+        render();
+        trackTitle.textContent = "Order #1024";
+        for (var i = 0; i < stepEls.length; i++) {
+          if (!ordered) return;
+          stepEls.forEach(function (li, k) { li.className = k < i ? "past" : (k === i ? "on" : ""); });
+          if (i < stepEls.length - 1) await sleep(r, 1300);
+        }
+        hint.textContent = "Delivered. Tap Add to order again.";
+      }
+      render();
+      await sleep(r, 900);
+      var seq = ["Pepperoni", "Veggie", "Pepperoni"];
+      for (var i = 0; i < seq.length; i++) {
+        if (!auto) return;
+        tap(addBtns[seq[i]]); add(seq[i]);
+        await sleep(r, 800);
+      }
+      if (!auto) return;
+      tap(orderBtn);
+      await sleep(r, 300);
+      if (!auto) return;
+      await place();
+    }
+  };
+
+  /* ---- netflix / airbnb notebook ---- */
+  DEMOS.eda = {
+    title: "netflix-eda.ipynb", kind: "Animated walkthrough", repo: "https://github.com/Vaikhashi/VOIS_AICTE_Oct2025_VaikhashiA",
+    caption: "Code and outputs taken from the notebooks in the repo.",
+    run: async function (st, r) {
+      var nb = h("div", { class: "nb" });
+      st.append(nb);
+      var n = 0;
+      async function cell(codeHtml, outFn) {
+        n++;
+        var inEl = h("div", { class: "nb-in", text: "In [ ]:" });
+        var cellEl = h("div", { class: "nb-cell" }, [inEl, h("div", { class: "nb-code", html: codeHtml })]);
+        nb.append(cellEl);
+        scrollEnd(st);
+        await sleep(r, 700);
+        cellEl.classList.add("running");
+        inEl.textContent = "In [*]:";
+        await sleep(r, 900);
+        cellEl.classList.remove("running");
+        inEl.textContent = "In [" + n + "]:";
+        var out = h("div", { class: "nb-out" });
+        cellEl.append(out);
+        await outFn(out);
+        scrollEnd(st);
+        await sleep(r, 900);
+      }
+      var violet = cssVar("--violet"), teal = cssVar("--teal");
+      await cell('df = pd.read_csv(<span class="st">\'Netflix Dataset.csv\'</span>)\n<span class="cm"># clean nulls, normalise columns, keep 2008–2021</span>\n<span class="kw">print</span>(<span class="st">f"Data filtered for 2008-2021. Total records: {len(df_filtered)}"</span>)',
+        function (out) { out.textContent = "Data filtered for 2008-2021. Total records: 7779"; return Promise.resolve(); });
+
+      await cell('content_over_time = df_filtered.groupby([<span class="st">\'release_year\'</span>, <span class="st">\'type\'</span>]).size().unstack(fill_value=<span class="kw">0</span>)\ncontent_over_time.plot(kind=<span class="st">\'line\'</span>, marker=<span class="st">\'o\'</span>)',
+        async function (out) {
+          var years = [], movie = [1, 2, 1, 13, 3, 6, 19, 58, 258, 864, 1255, 1498, 1313, 88], tv = [1, 0, 0, 0, 0, 5, 6, 30, 185, 361, 430, 656, 697, 29];
+          for (var y = 2008; y <= 2021; y++) years.push(y);
+          var W = 560, H = 230, L = 44, B = 24, T = 14, Rr = 14, max = 1600;
+          var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Line chart of Netflix titles per release year, movies peaking at 1498 in 2019 and TV shows at 697 in 2020" });
+          out.append(svg);
+          function px(i) { return L + i * (W - L - Rr) / (years.length - 1); }
+          function py(v) { return T + (H - T - B) * (1 - v / max); }
+          [0, 500, 1000, 1500].forEach(function (g) {
+            sv("line", { x1: L, x2: W - Rr, y1: py(g), y2: py(g), stroke: "currentColor", "stroke-opacity": g ? .12 : .35 }, svg);
+            sv("text", { x: L - 6, y: py(g) + 3, "text-anchor": "end" }, svg).textContent = g;
+          });
+          years.forEach(function (y, i) { if (i % 2 === 0) sv("text", { x: px(i), y: H - 6, "text-anchor": "middle" }, svg).textContent = y; });
+          function series(vals, color, label, li, anchor) {
+            var d = vals.map(function (v, i) { return (i ? "L" : "M") + px(i).toFixed(1) + "," + py(v).toFixed(1); }).join(" ");
+            var p = sv("path", { d: d, fill: "none", stroke: color, "stroke-width": 2.25, "stroke-linejoin": "round" }, svg);
+            var len = p.getTotalLength();
+            p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+            p.style.transition = "stroke-dashoffset 1.4s ease";
+            requestAnimationFrame(function () { requestAnimationFrame(function () { p.style.strokeDashoffset = 0; }); });
+            var t = sv("text", { x: px(li) + (anchor === "end" ? -8 : 6), y: py(vals[li]) - 6, "text-anchor": anchor || "start", style: "fill:" + color + ";font-weight:600" }, svg);
+            t.textContent = label + " " + vals[li];
+          }
+          series(movie, violet, "Movie", 11);
+          series(tv, teal, "TV Show", 12, "end");
+          await sleep(r, 1500);
+        });
+
+      await cell('genre_counts = count_occurrences(df_filtered, <span class="st">\'genre\'</span>)\ntop_10_genres = genre_counts.head(<span class="kw">10</span>)',
+        async function (out) {
+          var g = [["International Movies", 2437], ["Dramas", 2108], ["Comedies", 1472], ["International TV Shows", 1198], ["Documentaries", 786], ["Action & Adventure", 721], ["TV Dramas", 703], ["Independent Movies", 675], ["Children & Family Movies", 532], ["Romantic Movies", 531]];
+          var W = 560, rowH = 20, H = g.length * rowH + 6, L = 150;
+          var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Top 10 Netflix genres, led by International Movies with 2437 titles" });
+          out.append(svg);
+          g.forEach(function (row, i) {
+            var y = i * rowH + 3;
+            sv("text", { x: L - 8, y: y + 12, "text-anchor": "end" }, svg).textContent = row[0];
+            var w = (W - L - 50) * row[1] / 2437;
+            var b = sv("rect", { x: L, y: y + 2, width: w, height: rowH - 7, rx: 2, fill: teal }, svg);
+            b.style.transformBox = "fill-box"; b.style.transformOrigin = "left"; b.style.transform = "scaleX(0)";
+            b.style.transition = "transform .6s ease " + (i * .06) + "s";
+            requestAnimationFrame(function () { requestAnimationFrame(function () { b.style.transform = "scaleX(1)"; }); });
+            sv("text", { x: L + w + 6, y: y + 12 }, svg).textContent = row[1];
+          });
+          await sleep(r, 1200);
+        });
+
+      await cell('<span class="cm"># second notebook: Airbnb</span>\ndf = pd.read_csv(<span class="st">\'Airbnb_Open_Data.csv\'</span>)\ndf.info()',
+        function (out) { out.textContent = "<class 'pandas.core.frame.DataFrame'>\nRangeIndex: 102599 entries, 0 to 102598\nData columns (total 26 columns)"; return Promise.resolve(); });
+    }
+  };
+
+  /* ---- pong ---- */
+  DEMOS.pong = {
+    title: "pong", kind: "Playable", repo: "https://github.com/Vaikhashi/pong-game",
+    caption: "A mini rebuild of the Pong game in the repo.",
+    run: function (st, r) {
+      var cv = h("canvas", { class: "pg-canvas", width: 800, height: 500, tabindex: "0", "aria-label": "Pong. Move your paddle with the mouse, touch, or the arrow keys." });
+      st.append(h("div", { class: "pg-wrap" }, [cv, h("p", { class: "pg-help", text: "Move with your mouse, finger, or the ↑ ↓ keys. First to 5 wins." })]));
+      var ctx = cv.getContext("2d"), W = 800, H = 500, PH = 90, PW = 12;
+      var ink = cssVar("--code-ink"), teal = cssVar("--teal"), rose = cssVar("--rose"), dim = cssVar("--code-punc");
+      var you = { y: H / 2 - PH / 2, s: 0 }, cpu = { y: H / 2 - PH / 2, s: 0 }, ball, wait = 0, over = false, keys = {};
+      function clampP(y) { return Math.max(0, Math.min(H - PH, y)); }
+      function serve(dir) { ball = { x: W / 2, y: H / 2, vx: dir * 6, vy: (Math.random() * 2 - 1) * 3.5, r: 9 }; wait = 45; }
+      serve(Math.random() < .5 ? 1 : -1);
+      function move(e) { var b = cv.getBoundingClientRect(); you.y = clampP((e.clientY - b.top) / b.height * H - PH / 2); }
+      cv.addEventListener("pointermove", move);
+      cv.addEventListener("pointerdown", function (e) { move(e); if (over) { you.s = cpu.s = 0; over = false; serve(1); } });
+      function kd(e) { if (e.key === "ArrowUp" || e.key === "ArrowDown") { keys[e.key] = e.type === "keydown"; e.preventDefault(); } }
+      document.addEventListener("keydown", kd);
+      document.addEventListener("keyup", kd);
+      r.cleanups.push(function () { document.removeEventListener("keydown", kd); document.removeEventListener("keyup", kd); });
+      function hit(p, x, dirOut) {
+        if (ball.y + ball.r > p.y && ball.y - ball.r < p.y + PH) {
+          var off = (ball.y - (p.y + PH / 2)) / (PH / 2);
+          var sp = Math.min(Math.hypot(ball.vx, ball.vy) * 1.05, 14);
+          ball.vx = dirOut * Math.max(5, sp * Math.cos(off * .9));
+          ball.vy = sp * Math.sin(off * .9);
+          ball.x = x;
+        }
+      }
+      function update() {
+        if (keys.ArrowUp) you.y = clampP(you.y - 9);
+        if (keys.ArrowDown) you.y = clampP(you.y + 9);
+        var target = ball.vx > 0 ? ball.y - PH / 2 : H / 2 - PH / 2;
+        cpu.y = clampP(cpu.y + Math.max(-5.4, Math.min(5.4, target - cpu.y)));
+        if (over) return;
+        if (wait > 0) { wait--; return; }
+        ball.x += ball.vx; ball.y += ball.vy;
+        if (ball.y < ball.r) { ball.y = ball.r; ball.vy *= -1; }
+        if (ball.y > H - ball.r) { ball.y = H - ball.r; ball.vy *= -1; }
+        if (ball.vx < 0 && ball.x - ball.r <= 24 + PW && ball.x > 20) hit(you, 24 + PW + ball.r, 1);
+        if (ball.vx > 0 && ball.x + ball.r >= W - 24 - PW && ball.x < W - 20) hit(cpu, W - 24 - PW - ball.r, -1);
+        if (ball.x < -30) { cpu.s++; check(); serve(1); }
+        if (ball.x > W + 30) { you.s++; check(); serve(-1); }
+      }
+      function check() { if (you.s >= 5 || cpu.s >= 5) over = true; }
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.strokeStyle = dim; ctx.setLineDash([10, 14]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = dim; ctx.font = "600 56px 'Martian Mono', monospace"; ctx.textAlign = "center";
+        ctx.fillText(you.s, W / 2 - 80, 80); ctx.fillText(cpu.s, W / 2 + 80, 80);
+        ctx.font = "500 14px 'Martian Mono', monospace";
+        ctx.fillText("you", W / 2 - 80, 104); ctx.fillText("computer", W / 2 + 80, 104);
+        ctx.fillStyle = teal; ctx.fillRect(24, you.y, PW, PH);
+        ctx.fillStyle = ink; ctx.fillRect(W - 24 - PW, cpu.y, PW, PH);
+        if (!over) { ctx.fillStyle = rose; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill(); }
+        else {
+          ctx.fillStyle = ink; ctx.font = "700 40px 'Martian Mono', monospace";
+          ctx.fillText(you.s > cpu.s ? "You win!" : "Computer wins", W / 2, H / 2 + 10);
+          ctx.font = "500 16px 'Martian Mono', monospace"; ctx.fillStyle = dim;
+          ctx.fillText("Click or tap to play again", W / 2, H / 2 + 46);
+        }
+      }
+      (function frame() { if (r.dead) return; update(); draw(); requestAnimationFrame(frame); })();
+      setTimeout(function () { try { cv.focus({ preventScroll: true }); } catch (e) {} }, 50);
+    }
+  };
+
+  /* ---- library system ---- */
+  DEMOS.library = {
+    title: "library-system", kind: "Animated walkthrough", repo: "https://github.com/Vaikhashi/week3-library-system",
+    caption: "A console session using the menu and prompts from the Java app, with sample data.",
+    run: async function (st, r) {
+      var term = h("div", { class: "d-term", style: "min-height:100%;font-size:.8125rem" });
+      st.append(term);
+      function out(text, cls) { term.append(h("span", { class: cls || "", text: text })); scrollEnd(st); }
+      async function cmd(text) { out("$ ", "dim"); var s = h("span"); term.append(s); await typeText(r, s, text, 32); out("\n"); await sleep(r, 350); }
+      async function ask(prompt, val) { out(prompt); var s = h("span", { class: "str" }); term.append(s); await sleep(r, 300); await typeText(r, s, val, 20); out("\n"); await sleep(r, 200); }
+      var MENU = "=== LIBRARY SYSTEM ===\n1. Add Book\n2. View Books\n3. Register Member\n4. Borrow Book\n5. Return Book\n6. Statistics\n7. Exit\n";
+      await sleep(r, 300);
+      await cmd("javac -d bin src/main/java/library/*.java");
+      await cmd("java -cp bin library.Main");
+      out(MENU, "key"); await ask("Choice: ", "1");
+      await ask("ISBN: ", "978-0132350884"); await ask("Title: ", "Clean Code"); await ask("Author: ", "Robert C. Martin");
+      out("\n" + MENU, "key"); await ask("Choice: ", "3");
+      await ask("Member ID: ", "M001"); await ask("Name: ", "Asha");
+      out("\n" + MENU, "key"); await ask("Choice: ", "4");
+      await ask("ISBN: ", "978-0132350884"); await ask("Member ID: ", "M001");
+      out("\n" + MENU, "key"); await ask("Choice: ", "6");
+      out("Total Books: 1\nAvailable: 0\nBorrowed: 1\nOverdue: 0\n", "ok");
+      await sleep(r, 600);
+      out("\n" + MENU, "key"); await ask("Choice: ", "7");
+      out("$ ", "dim"); term.append(h("span", { class: "cur" }));
+    }
+  };
+
+  /* ---- task manager ---- */
+  DEMOS.tasks = {
+    title: "task-manager", kind: "Playable", repo: "https://github.com/Vaikhashi/week2-task-manager",
+    caption: "A working copy of the app. Your tasks reset when you close this.",
+    run: function (st, r) {
+      var tasks = [{ t: "Push portfolio to GitHub", d: true }, { t: "Write a README for CampusFlow", d: false }, { t: "Archive old portfolio repos", d: false }];
+      var filter = "all";
+      var input = h("input", { type: "text", placeholder: "Add a task", "aria-label": "New task" });
+      var form = h("form", null, [input, h("button", { class: "add", type: "submit", text: "Add" })]);
+      var list = h("ul"), count = h("p", { class: "tm-count" });
+      var fb = {};
+      var filters = h("div", { class: "tm-filters", role: "group", "aria-label": "Filter tasks" });
+      [["all", "All"], ["active", "Active"], ["done", "Completed"]].forEach(function (f) {
+        var b = h("button", { type: "button", text: f[1], "aria-pressed": f[0] === filter ? "true" : "false" });
+        b.addEventListener("click", function () { filter = f[0]; render(); });
+        fb[f[0]] = b; filters.append(b);
+      });
+      st.append(h("div", { class: "d-panel tm" }, [h("h4", { text: "Interactive Task Manager" }), form, filters, list, count]));
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = input.value.trim(); if (!v) return;
+        tasks.push({ t: v, d: false }); input.value = ""; render();
+      });
+      function render() {
+        for (var k in fb) fb[k].setAttribute("aria-pressed", k === filter ? "true" : "false");
+        list.innerHTML = "";
+        tasks.forEach(function (task, i) {
+          if (filter === "active" && task.d) return;
+          if (filter === "done" && !task.d) return;
+          var cb = h("input", { type: "checkbox" }); cb.checked = task.d;
+          cb.addEventListener("change", function () { task.d = cb.checked; render(); });
+          var del = h("button", { class: "del", type: "button", "aria-label": "Delete " + task.t, text: "×" });
+          del.addEventListener("click", function () { tasks.splice(i, 1); render(); });
+          list.append(h("li", { class: task.d ? "done" : "" }, [h("label", null, [cb, h("span", { text: task.t })]), del]));
+        });
+        if (!list.children.length) list.append(h("li", { class: "cf-meta", text: filter === "done" ? "Nothing completed yet." : "Nothing to do. Add a task above." }));
+        var left = tasks.filter(function (t) { return !t.d; }).length;
+        count.textContent = left + (left === 1 ? " task" : " tasks") + " left";
+      }
+      render();
+    }
+  };
+
+  /* palette commands */
+  if (window.__addCommands) {
+    window.__addCommands([
+      { cmd: "demo campusflow", desc: "Play the CampusFlow demo", run: function () { openDemo("campusflow"); } },
+      { cmd: "demo face", desc: "Play the face recognition demo", run: function () { openDemo("face"); } },
+      { cmd: "demo agent", desc: "Watch an ERP agent run", run: function () { openDemo("agent"); } },
+      { cmd: "demo pizza", desc: "Order a pizza", run: function () { openDemo("pizza"); } },
+      { cmd: "demo notebook", desc: "Run the Netflix notebook", run: function () { openDemo("eda"); } },
+      { cmd: "pong", desc: "Play Pong right here", run: function () { openDemo("pong"); } }
+    ]);
+  }
 })();
 </script>
 </body>
